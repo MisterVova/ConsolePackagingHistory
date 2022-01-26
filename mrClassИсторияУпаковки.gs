@@ -1,12 +1,3 @@
-function triggerHelpИсторияУаковки(info = undefined, duration = 1 / 24 / 60 * 5) {
-  let packagingHistory = new MrClassPackagingHistory();
-  packagingHistory.triggerHelpИсторияУаковки(info, duration);
-}
-
-function menuHelpИсторияУаковки() {
-  triggerHelpИсторияУаковки(`Вызов Триггера из меню ${new Date()}`);
-}
-
 
 
 
@@ -821,6 +812,15 @@ function newEmptyJsonЗаказа() {
 }
 
 
+
+function triggerHelpИсторияУаковки(info = undefined, duration = 1 / 24 / 60 * 5) {
+  let packagingHistory = new MrClassPackagingHistory();
+  packagingHistory.triggerHelpИсторияУаковки(info, duration);
+}
+
+function menuHelpИсторияУаковки() {
+  triggerHelpИсторияУаковки(`Вызов Триггера из меню ${new Date()}`);
+}
 
 
 

@@ -240,10 +240,10 @@ let rangesStr = {
 
 //-------------------------------------------------------------------------
 
-function menu_lib_print() { new MrClassConsole().executeCommands([commands.get, commands.showPdf, commands.print]); }   //  Напечатано
-function menu_lib_skip() { new MrClassConsole().executeCommands([commands.skip_and_next]); }    //  Пропустить
-function menu_lib_done() { new MrClassConsole().executeCommands([commands.done_and_next]); }   //   Выполнено
-function menu_lib_next() { new MrClassConsole().executeCommands([commands.next]); }   //   Следующий
+function menu_print() { new MrClassConsole().executeCommands([commands.get, commands.showPdf, commands.print]); }   //  Напечатано
+function menu_skip() { new MrClassConsole().executeCommands([commands.skip_and_next]); }    //  Пропустить
+function menu_done() { new MrClassConsole().executeCommands([commands.done_and_next]); }   //   Выполнено
+function menu_next() { new MrClassConsole().executeCommands([commands.next]); }   //   Следующий
 
 /** @param {EventPostGet} event  @returns {JsonЗаказа}  */
 function executeEvent(event) {

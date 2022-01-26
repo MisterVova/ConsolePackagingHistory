@@ -1,12 +1,3 @@
-function triggerИмпортДанных(info = undefined, duration = 1 / 24 / 60 * 5) {
-  let classImportData = new MrClassImportData();
-  classImportData.triggerИмпортДанных(info, duration);
-  menuОчиститьКонсоли();
-}
-
-function menuИмпортДанных() {
-  triggerИмпортДанных(`Вызов Триггера из меню ${new Date()}`);
-}
 
 
 
@@ -188,7 +179,7 @@ class MrClassImportData {
 
       });
 
-      
+
     }
 
     Logger.log(`this.arrs.ВсеЗаказы.length=${this.arrs.ВсеЗаказы.length}`);
@@ -310,3 +301,24 @@ class MrClassImportData {
 
 
 }
+
+
+
+
+
+function triggerИмпортДанных(info = undefined, duration = 1 / 24 / 60 * 5) {
+  let classImportData = new MrClassImportData();
+  classImportData.triggerИмпортДанных(info, duration);
+  menuОчиститьКонсоли();
+}
+
+function menuИмпортДанных() {
+  triggerИмпортДанных(`Вызов Триггера из меню ${new Date()}`);
+}
+
+
+
+
+
+
+
