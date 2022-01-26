@@ -115,6 +115,7 @@ class MrClassPackagingHistory {
 
   /** @param {Task} task   */
   setСтатусУпаковки(task, статусУпаковки = СтатусУпаковки.МестоДляСтатуса) {
+    if (task.row < this.rows.bodyFirst) { return; }
     task.sheetRowArr[this.cols.ВсеЗаказы.Статус] = статусУпаковки;
     task.sheetRowArr[this.cols.Выполнения.КтоВыполнил] = task.avtor;
     task.sheetRowArr[this.cols.Выполнения.ДатаВыполнения] = new Date();
@@ -137,8 +138,8 @@ class MrClassPackagingHistory {
   }
   /** @param {Task} task   */
   setОшибкаКритеческая(task, str) {
-    task.sheetRowArr[this.cols.Заметки.ОшибкаКритеческая] = str;
-    this.sheet.getRange(task.row, this.cols.Заметки.ОшибкаКритеческая).setValue(str);
+    // task.sheetRowArr[this.cols.Заметки.ОшибкаКритеческая] = str;
+    // this.sheet.getRange(task.row, this.cols.Заметки.ОшибкаКритеческая).setValue(str);
     task.ОшибкаКритеческая = true;
     this.setСтатусУпаковки(task, СтатусУпаковки.ОшибкаКритическая);
     this.setЗаказВРаботе(task.avtor, undefined);
@@ -577,7 +578,7 @@ class MrClassPackagingHistory {
 
     this.cols = {
       first: nr("A"),
-      last: nr("I"),
+      last: nr("H"),
       ВсеЗаказы: {
         first: nr("A"),
         last: nr("D"),
@@ -656,7 +657,7 @@ class MrClassPackagingHistory {
 
     if (!this.hasTime(duration, 60 * 1000)) { Logger.log(`Мало времени выход из triggerHelpИсторияУаковки return`); return; }
 
-    if (this.sheet.getRange(this.rangeStr.pdfЗагружены).getValue()===true) { return; }
+    if (this.sheet.getRange(this.rangeStr.pdfЗагружены).getValue() === true) { return; }
 
 
     // выбираем те у которых нет pdf
@@ -744,39 +745,6 @@ class MrClassPackagingHistory {
 
 
   }
-
-
-  // /** @param {Task} task */
-  // getPdfUrlForTask(task) {
-
-  //   /** @type {Заказ} */
-  //   let json_private = task.sheetRowArr[this.cols.Экпропт.json_private];
-  //   json_private = ((json_str) => { try { return JSON.parse(json_str) } catch { return undefined } })(json_private);
-  //   if (!json_private) {
-  //     task.addError(`Нет Данных для Номера Отправления ${task.posting_number}`);
-  //   } else {
-  //     let request = json_private.request;
-  //     let response = this.fetchAllByrequestArr([request])[0];
-  //     urlPdf = response.getContentText();
-  //   }
-
-
-  //   if (!this.isUrl(urlPdf)) {
-  //     // Logger.log(`MrClassPackagingHistory response.getContentText 3 ${urlPdf}`);
-  //     // task.addError(`Нет удалось получить PDF ${task.posting_number}`);
-  //     task.addError(`Нет удалось получить PDF response| ${urlPdf}`);
-  //     this.setОшибкаКритеческая(task, `Нет удалось получить PDF response| ${urlPdf}`);
-  //     urlPdf = undefined;
-
-  //   } else {
-  //     if (urlPdf != task.sheetRowArr[this.cols.Экпропт.pdf]) {
-  //       this.setUrlPdf(task, urlPdf);
-  //     }
-  //   }
-
-
-  // }
-
 
   hasTime(duration, tMin = 20 * 1000) {
     let tDey = 24 * 60 * 60 * 1000;
