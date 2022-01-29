@@ -85,7 +85,7 @@ class MrClassShops {
       списокПозиций = списокПозиций.filter((v, i, arr) => { return !rowsЗаказовВРаботе.includes(v) });
 
 
-      Logger.log(`MrClassShops getПриоритетУпакоаки меткаМагазина=${меткаМагазина}    списокПозиций=${JSON.stringify(списокПозиций)}`);
+      Logger.log(`MrClassShops getПриоритетУпакоки меткаМагазина=${меткаМагазина}    списокПозиций=${JSON.stringify(списокПозиций)}`);
       if (списокПозиций.length == 0) { continue; }  // для магазина все выполнили 
       ret = списокПозиций;
       break;

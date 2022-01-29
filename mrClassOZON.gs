@@ -4,7 +4,7 @@ class MrClassOZON {
   constructor() {
     Logger.log(`MrClassOZON constructor`)
     // this.folderId = "17xJrQluGnmaTzfZhuUm4QlgWkcrKvZhz";
-    this.folderId = "17N_9YdtXDdjJwA7XQLr6o90hsz6BshAH";
+    this.folderId = "17O5q_MaosDw0tzPU6wTdUEu_hAG49-QO";
     // this.folderId = "https://drive.google.com/drive/folders/17N_9YdtXDdjJwA7XQLr6o90hsz6BshAH";
     this.url_OZON = "https://api-seller.ozon.ru/v2/posting/fbs/package-label";
     this.url_if_error = "Ошибка исполнения";

@@ -297,15 +297,7 @@ class MrClassImportData {
     }
   }
 
-
-
-
 }
-
-
-
-
-
 function triggerИмпортДанных(info = undefined, duration = 1 / 24 / 60 * 5) {
   let classImportData = new MrClassImportData();
   classImportData.triggerИмпортДанных(info, duration);
@@ -315,10 +307,3 @@ function triggerИмпортДанных(info = undefined, duration = 1 / 24 / 6
 function menuИмпортДанных() {
   triggerИмпортДанных(`Вызов Триггера из меню ${new Date()}`);
 }
-
-
-
-
-
-
-

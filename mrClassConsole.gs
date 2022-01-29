@@ -203,16 +203,22 @@ class MrClassConsole {
 
   /** @param {string[]} errors */
   showErrors(errors) {
-    let str = `Есть Ошибки:\n${errors.map((v, i, arr) => { return `  ${i + 1}: ${v}` }).join('\n')}`;
-    Logger.log(str);
-    SpreadsheetApp.getUi().alert(str);
+
+    // let str = `Есть Ошибки:\n${errors.map((v, i, arr) => { return `  ${i + 1}: ${v}` }).join('\n')}`;
+    let str = ` <h1>ВНИМАНИЕ!</h1>
+      <h2>
+        ${errors.map((v, i, arr) => { return `<li> ${v}  </li>` }).join('\n')}
+      </h2>
+    `;
+
+    // Logger.log(str);
+
+    var attention = HtmlService.createHtmlOutput(''+str+'<script>setTimeout(function () { google.script.host.close() }, 10000);</script>');
+    SpreadsheetApp.getUi().showModalDialog(attention, " ");
+  
+
   }
-
-
 }
-
-
-
 
 let commands = {
   print: "print", // пометить заказ как Пропущенный
@@ -259,5 +265,4 @@ function menuОчиститьКонсоли() {
     sheet.getRange(rangesStr.postingNumber).setValue(DefНомерОтправления.НЕ_ВЫБРАН_ЗАКАЗ);
   }
 }
-
 
