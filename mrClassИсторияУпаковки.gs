@@ -666,11 +666,13 @@ class MrClassPackagingHistory {
 
     let vls = this.getValues();
 
-    let mrClassShops = new MrClassShops(vls, this);
-    let следующиеЗаказы = mrClassShops.getСледующиеЗаказы();
-    if (следующиеЗаказы.length == 0) {
-    }
-    this.sheet.getRange(this.rangeStr.СледующиеЗаказы).setValue(JSON.stringify(следующиеЗаказы));
+    // создает колизии повторяются заказы
+    // let mrClassShops = new MrClassShops(vls, this);
+    // let следующиеЗаказы = mrClassShops.getСледующиеЗаказы();
+    // if (следующиеЗаказы.length == 0) {
+    // }
+    // this.sheet.getRange(this.rangeStr.СледующиеЗаказы).setValue(JSON.stringify(следующиеЗаказы));
+
 
     if (!this.hasTime(duration, 60 * 1000)) { Logger.log(`Мало времени выход из triggerHelpИсторияУаковки return`); return; }
 

@@ -74,27 +74,44 @@ class MrClassConsole {
       Logger.log(`MrClassConsole executeCommands  не лист Консоли`);
       return;
     }
-    /** @type {JsonЗаказа} */
-    let jsonЗаказа = undefined;
-    Logger.log(`MrClassConsole executeCommands commands=${commandArr}`);
-    for (let i = 0; i < commandArr.length; i++) {
-      let command = commandArr[i];
-      Logger.log(`MrClassConsole executeCommands Следуящая command=${command}`);
-      switch (command) {
-        case commands.get: jsonЗаказа = this.get(); break;
-        case commands.showPdf: jsonЗаказа = this.showPdf(jsonЗаказа); break;
-        case commands.print: jsonЗаказа = this.print(); break;
-        case commands.next: jsonЗаказа = this.next(); break;
-        case commands.skip: jsonЗаказа = this.skip(); break;
-        case commands.done: jsonЗаказа = this.done(); break;
-        case commands.skip_and_next: jsonЗаказа = this.skip_and_next(); break;
-        case commands.done_and_next: jsonЗаказа = this.done_and_next(); break;
-      }
-      this.checkErrors(jsonЗаказа);
-      if (this.hasError) { break; }
-    }
 
-    this.updateSheet(jsonЗаказа);
+    let lock = LockService.getScriptLock();
+    try {
+      lock.waitLock(1000 * 60 * 29); // подождите 60 * 29 секунд, пока другие не воспользуются разделом кода, и заблокируйте его, чтобы остановить, а затем продолжите
+
+
+
+      /** @type {JsonЗаказа} */
+      let jsonЗаказа = undefined;
+      Logger.log(`MrClassConsole executeCommands commands=${commandArr}`);
+      for (let i = 0; i < commandArr.length; i++) {
+        let command = commandArr[i];
+        Logger.log(`MrClassConsole executeCommands Следуящая command=${command}`);
+        switch (command) {
+          case commands.get: jsonЗаказа = this.get(); break;
+          case commands.showPdf: jsonЗаказа = this.showPdf(jsonЗаказа); break;
+          case commands.print: jsonЗаказа = this.print(); break;
+          case commands.next: jsonЗаказа = this.next(); break;
+          case commands.skip: jsonЗаказа = this.skip(); break;
+          case commands.done: jsonЗаказа = this.done(); break;
+          case commands.skip_and_next: jsonЗаказа = this.skip_and_next(); break;
+          case commands.done_and_next: jsonЗаказа = this.done_and_next(); break;
+        }
+        this.checkErrors(jsonЗаказа);
+        if (this.hasError) { break; }
+      }
+
+      this.updateSheet(jsonЗаказа);
+
+
+    } catch (err) {
+      mrErrToString(err);
+      let str = "наверное очередь занята";
+      Logger.log(str);
+      task.addError(str);
+    } finally {
+      lock.releaseLock();
+    }
   }
 
 
@@ -213,9 +230,9 @@ class MrClassConsole {
 
     // Logger.log(str);
 
-    var attention = HtmlService.createHtmlOutput(''+str+'<script>setTimeout(function () { google.script.host.close() }, 10000);</script>');
+    var attention = HtmlService.createHtmlOutput('' + str + '<script>setTimeout(function () { google.script.host.close() }, 10000);</script>');
     SpreadsheetApp.getUi().showModalDialog(attention, " ");
-  
+
 
   }
 }
