@@ -1,6 +1,3 @@
-
-
-
 class MrClassImportData {
   constructor() {
     this.sheet = getContext().getSheetByName(getContext().sheetNameИмпортДанных);

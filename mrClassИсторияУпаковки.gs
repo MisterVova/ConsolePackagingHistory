@@ -1,6 +1,3 @@
-
-
-
 class MrClassPackagingHistory {
   constructor() {
     this.timeConstruct = new Date();
@@ -86,12 +83,7 @@ class MrClassPackagingHistory {
       return retArr;
     });
 
-
-
-
   }
-
-
 
   getSpreadsheetApp() {
     if (!this.urlSpreadsheetApp) {
@@ -243,7 +235,7 @@ class MrClassPackagingHistory {
     // let допустимыеСтатусы = [СтатусУпаковки.Пропущено, СтатусУпаковки.Новый]; //статусы при которых можно пометить как СтатусУпаковки.Выполнено
     let допустимыеСтатусы = [СтатусУпаковки.Пропущено, СтатусУпаковки.Новый]; //статусы при которых можно пометить как СтатусУпаковки.Выполнено
     let текСтатус = task.sheetRowArr[this.cols.ВсеЗаказы.Статус]; // текуший статус
-    
+
     if (!допустимыеСтатусы.includes(текСтатус)) {
       task.addError(`ШК был распечатан!`);
       return;
@@ -337,11 +329,11 @@ class MrClassPackagingHistory {
     let nextRow = 0;
     // Logger.log(` getRowForNextTask `);
 
-    let всеВыполнено = this.sheet.getRange(this.rangeStr.ВсеВыполнено).getValue();
-    if (всеВыполнено == true) { return this.getRowЗаказа(DefНомерОтправления.ВСЕ_ВЫПОЛНЕННО); }
+    // let всеВыполнено = this.sheet.getRange(this.rangeStr.ВсеВыполнено).getValue();
+    // if (всеВыполнено == true) { return this.getRowЗаказа(DefНомерОтправления.ВСЕ_ВЫПОЛНЕННО); }
 
-    let rowТекущийЗаказ = this.sheet.getRange(this.rangeStr.ТекущийЗаказ).getValue();
-    if (rowТекущийЗаказ == this.rows.finish) { return this.getRowЗаказа(DefНомерОтправления.ВСЕ_ВЫПОЛНЕННО); }
+    // let rowТекущийЗаказ = this.sheet.getRange(this.rangeStr.ТекущийЗаказ).getValue();
+    // if (rowТекущийЗаказ == this.rows.finish) { return this.getRowЗаказа(DefНомерОтправления.ВСЕ_ВЫПОЛНЕННО); }
 
 
 
@@ -366,7 +358,7 @@ class MrClassPackagingHistory {
 
         if (следующиеЗаказы.length == 0) {
           следующиеЗаказы = [this.rows.finish];
-          //  нет болше заказов на упаковку
+          //  нет больше заказов на упаковку
         }
 
         // rowТекущийЗаказ = this.sheet.getRange(this.rangeStr.ТекущийЗаказ).getValue();
@@ -400,8 +392,14 @@ class MrClassPackagingHistory {
 
 
     if (nextRow == this.rows.finish) {
-      this.sheet.getRange(this.rangeStr.ВсеВыполнено).setValue(true);
+      let vls = this.getValues();
+      let fvls = vls.filter((v, i, arr) => { return v[this.cols.ВсеЗаказы.Статус] != СтатусУпаковки.Выполнено })
+      Logger.log(`fvls = ${fvls.length}`);
+      if (fvls.length == 0) {
+        this.sheet.getRange(this.rangeStr.ВсеВыполнено).setValue(true);
+      }
       nextRow = this.getRowЗаказа(DefНомерОтправления.ВСЕ_ВЫПОЛНЕННО);
+
     }
     return nextRow;
   }

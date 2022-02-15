@@ -1,4 +1,3 @@
-
 class MrClassConsole {
   constructor() {
     this.sheetNameConsole = "Консоль";
@@ -27,9 +26,6 @@ class MrClassConsole {
     this.event.parameter[web.parameters.avtor] = `${this.avtor}`;
     this.event.parameter[web.parameters.posting_number] = `${this.postingNumber}`;
   }
-
-
-
 
   getSheetNameActiveSheetConsole(testName = undefined) {
     let ss = this.getSpreadsheetApp();
@@ -106,7 +102,7 @@ class MrClassConsole {
 
     } catch (err) {
       mrErrToString(err);
-      let str = "наверное очередь занята";
+      let str = "Наверное очередь занята";
       Logger.log(str);
       task.addError(str);
     } finally {
@@ -174,6 +170,10 @@ class MrClassConsole {
 
   /** @returns {JsonЗаказа} */
   next() {
+
+    let curentPostingNumber = this.getCurentPostingNumber();
+    if (DefНомерОтправления.НЕ_ВЫБРАН_ЗАКАЗ != curentPostingNumber) { return; }
+
     this.event.parameter[web.parameters.task] = `${web.value.task.next}`;
     let ret = executeEvent(this.event);
     return ret;

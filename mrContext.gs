@@ -230,13 +230,6 @@ function nr(A1) {
 }
 
 
-
-
-
-
-
-
-
 function nc(column) {
   column = parseInt("" + column);
   if (isNaN(column)) { throw ('файл mrColumnToNr функция nrCol(): не найдено буквенное обозначение для колонки "' + column + '"'); }
