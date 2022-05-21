@@ -61,7 +61,7 @@ function menu_Штрихкод_поставки() {
 
   let sheetWB = new MrClassSheetWB("Поставки WB");
   let supplyId = sheetWB.getIdАктивнойПоставки();
-  sheetWB.Штрихкод_поставки(supplyId, "svg");
+  sheetWB.Штрихкод_поставки(supplyId, "pdf");
 }  // get_supplies_id_barcode:
 function menu_Список_заказов() { // get_supplies_id_orders
   let sheetWB = new MrClassSheetWB("Поставки WB");
@@ -114,6 +114,7 @@ class MrClassSheetWB {
       timeRange: "B1",
       текущая_поставка: "A1",
       штрихкод_поставки: "D1",
+      штрихкод_поставки_url: "E1",
     }
 
 
@@ -306,8 +307,17 @@ class MrClassSheetWB {
     let response = wb.fetch_json(url, undefined, "GET", "Штрихкод_поставки", 200);
     Logger.log(response);
     this.sheet.getRange(this.ranges.штрихкод_поставки).setValue(response);
-    // https://suppliers-api.wildberries.ru/api/v2/supplies/WB-GI-8844988/barcode?type=pdf
-    // https://suppliers-api.wildberries.ru/api/v2/supplies?type=pdf
+  
+    let response_pdf_base64 = JSON.parse(response);
+    let base64String = response_pdf_base64.file;
+    let folderId = new MrClassOZON().folderId;
+    let name = `${supplyId}`;
+    let ret_url_pdf = base64_to_url_pdf(base64String, name, folderId);
+    this.sheet.getRange(this.ranges.штрихкод_поставки_url).setValue(ret_url_pdf);
+    print_pdf_by_url(ret_url_pdf);
+    return ret_url_pdf;
+
+
   }
 
   // // GET ​/api​/v2​/supplies​/{id}​/orders // Возвращает список заказов, закреплённых за поставкой  // https://suppliers-api.wildberries.ru/swagger/index.html#/Marketplace/get_api_v2_supplies__id__orders
@@ -672,7 +682,6 @@ class MrClassTaskWB {
 
     let base64String = response_pdf_base64.data.file;
     let folderId = new MrClassOZON().folderId;
-    // let folderId = "1eOve2Aowgd65-YVlaj-kdT-YPCViI67p";
     let name = orderIds.join("_");
     let ret_url_pdf = base64_to_url_pdf(base64String, name, folderId);
     return ret_url_pdf;
