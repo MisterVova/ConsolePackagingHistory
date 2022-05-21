@@ -42,7 +42,9 @@ function get_menu_WB() {
 }
 
 function menu_Все_поставки() { new MrClassSheetWB("Поставки WB").Все_поставки(); }  // get_supplies:
+
 function menu_Создать_поставку() { new MrClassSheetWB("Поставки WB").Создать_поставку(); } // post_supplies:
+
 function menu_Добавить_заказ() {   // put_supplies_id:
   let sheetWB = new MrClassSheetWB("Поставки WB");
   let supplyId = sheetWB.getIdАктивнойПоставки();
@@ -51,22 +53,42 @@ function menu_Добавить_заказ() {   // put_supplies_id:
   let orders = 298190587;
   sheetWB.Добавить_заказ(supplyId, [orders]);
 }
+
 function menu_Закрыть_поставку() {
   let sheetWB = new MrClassSheetWB("Поставки WB");
   let supplyId = sheetWB.getIdАктивнойПоставки();
   sheetWB.Закрыть_поставку(supplyId);
   // new MrClassSheetWB("Поставки WB").Закрыть_поставку();
 }  // post_supplies_id_close: 
-function menu_Штрихкод_поставки() {
 
+function menu_Штрихкод_поставки() {
   let sheetWB = new MrClassSheetWB("Поставки WB");
   let supplyId = sheetWB.getIdАктивнойПоставки();
   sheetWB.Штрихкод_поставки(supplyId, "pdf");
 }  // get_supplies_id_barcode:
+
 function menu_Список_заказов() { // get_supplies_id_orders
   let sheetWB = new MrClassSheetWB("Поставки WB");
-  let supplyId = sheetWB.getIdАктивнойПоставки();
-  sheetWB.Список_заказов(supplyId);
+  // let supplyId = sheetWB.getIdАктивнойПоставки();
+  // /**  @type {[[]]} */
+  // let vls = sheetWB.Список_заказов(supplyId);
+
+  sheetWB.sheet.getRange(sheetWB.rowBodyFirst, sheetWB.col.заказы.first, sheetWB.rowBodyLast - sheetWB.rowBodyFirst + 1, sheetWB.col_Last - sheetWB.col.заказы.first + 1).clearContent();
+  let supplyIdAll = sheetWB.Все_поставки();
+  // supplyIdAll = [].concat(supplyIdAll,supplyIdAll,supplyIdAll);
+  let vlsAll = new Array();
+  supplyIdAll.forEach((item, i, arr) => {
+    let vls = sheetWB.Список_заказов(item[0]);
+    if (vls.length == 0) { return; }
+    vls = vls.map((v) => {
+      return [].concat(item, v);
+    });
+    vlsAll = [].concat(vlsAll, vls, [new Array(vls[0].length)]);
+  });
+
+  if (vlsAll.length == 0) { return; }
+  sheetWB.sheet.getRange(sheetWB.rowBodyFirst, sheetWB.col.заказы.first, vlsAll.length, vlsAll[0].length).setValues(vlsAll);
+
 }
 
 function menu_Этикетки_Заказов() {   // put_supplies_id:
@@ -104,7 +126,7 @@ class MrClassSheetWB {
         first: nr("A"),
       },
       заказы: {
-        first: nr("G"),
+        first: nr("D"),
         pdf: nr("D"),
       }
 
@@ -220,6 +242,7 @@ class MrClassSheetWB {
 
   // //GET /api/v2/supplies  // Возвращает список поставок   // https://suppliers-api.wildberries.ru/swagger/index.html#/Marketplace/get_api_v2_supplies
   // get_supplies: "/api/v2/supplies",
+  /** @returns {[[]]} */
   Все_поставки() {
     let vls = new Array();
     let wb = new MrClassWildBerries();
@@ -242,8 +265,11 @@ class MrClassSheetWB {
     Logger.log(vls);
 
     this.sheet.getRange(this.rowBodyFirst, this.col.поставки.first, this.rowBodyLast - this.rowBodyFirst + 1, 2).clearContent();
-    if (vls.length == 0) { return; }
+
+    if (vls.length == 0) { return vls; }
     this.sheet.getRange(this.rowBodyFirst, this.col.поставки.first, vls.length, vls[0].length).setValues(vls);
+
+    return vls;
 
   }
 
@@ -262,8 +288,8 @@ class MrClassSheetWB {
 
   getIdАктивнойПоставки() {
     let ret = this.sheet.getRange(this.ranges.текущая_поставка).getValue();
-    if (!ret){ throw "Нет Активной поставки"}
-    return ret; 
+    if (!ret) { throw "Нет Активной поставки" }
+    return ret;
   }
 
   // // PUT /api/v2/supplies/{id} // Добавляет к поставке заказы // https://suppliers-api.wildberries.ru/swagger/index.html#/Marketplace/put_api_v2_supplies__id_
@@ -307,7 +333,7 @@ class MrClassSheetWB {
     let response = wb.fetch_json(url, undefined, "GET", "Штрихкод_поставки", 200);
     Logger.log(response);
     this.sheet.getRange(this.ranges.штрихкод_поставки).setValue(response);
-  
+
     let response_pdf_base64 = JSON.parse(response);
     let base64String = response_pdf_base64.file;
     let folderId = new MrClassOZON().folderId;
@@ -322,6 +348,7 @@ class MrClassSheetWB {
 
   // // GET ​/api​/v2​/supplies​/{id}​/orders // Возвращает список заказов, закреплённых за поставкой  // https://suppliers-api.wildberries.ru/swagger/index.html#/Marketplace/get_api_v2_supplies__id__orders
   // get_supplies_id_orders: "/api​/v2​/supplies​/{id}​/orders",
+  /** @returns {[[]]} */
   Список_заказов(supplyId) {
     if (!supplyId) { throw new Error("supplyId ID_Поставки не может быть пустым"); }
     let url = `${urls.поставки.get_supplies_id_orders}`.replace("{id}", supplyId);
@@ -330,7 +357,7 @@ class MrClassSheetWB {
 
     let allItems = JSON.parse(response)["orders"];
 
-    this.sheet.getRange(this.rowBodyFirst, this.col.заказы.first, this.rowBodyLast - this.rowBodyFirst + 1, this.col_Last - this.col.заказы.first + 1).clearContent();
+    // this.sheet.getRange(this.rowBodyFirst, this.col.заказы.first, this.rowBodyLast - this.rowBodyFirst + 1, this.col_Last - this.col.заказы.first + 1).clearContent();
     let vls = allItems.map((item, i, arr) => {
       let retArr = new Array();
       retArr.push(undefined);
@@ -353,8 +380,9 @@ class MrClassSheetWB {
     });
 
     Logger.log(vls);
-    if (vls.length == 0) { return; }
-    this.sheet.getRange(this.rowBodyFirst, this.col.заказы.first, vls.length, vls[0].length).setValues(vls);
+    return vls;
+    // if (vls.length == 0) { return; }
+    // this.sheet.getRange(this.rowBodyFirst, this.col.заказы.first, vls.length, vls[0].length).setValues(vls);
 
   }
 
