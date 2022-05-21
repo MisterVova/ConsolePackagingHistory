@@ -1,4 +1,3 @@
-
 function onOpen() {
 
   var ui = SpreadsheetApp.getUi();
@@ -15,11 +14,8 @@ function onOpen() {
     .addItem('Обновить', 'menuИмпортДанных')
     .addItem('Очистить Консоли', 'menuОчиститьКонсоли')
   );
+
+  menu.addSubMenu(get_menu_WB());
   menu.addToUi();
   Logger.log(`onOpen.onOpen() menu заданно `);
 }
-
-
-
-
-

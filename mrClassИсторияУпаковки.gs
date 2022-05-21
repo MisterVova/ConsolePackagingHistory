@@ -1,6 +1,3 @@
-
-
-
 class MrClassPackagingHistory {
   constructor() {
     this.timeConstruct = new Date();
@@ -86,12 +83,7 @@ class MrClassPackagingHistory {
       return retArr;
     });
 
-
-
-
   }
-
-
 
   getSpreadsheetApp() {
     if (!this.urlSpreadsheetApp) {
@@ -115,6 +107,7 @@ class MrClassPackagingHistory {
 
   /** @param {Task} task   */
   setСтатусУпаковки(task, статусУпаковки = СтатусУпаковки.МестоДляСтатуса) {
+    // Logger.log(`setСтатусУпаковки  статусУпаковки=${статусУпаковки} | task=${JSON.stringify(task)}`);
     if (task.row < this.rows.bodyFirst) { return; }
     task.sheetRowArr[this.cols.ВсеЗаказы.Статус] = статусУпаковки;
     task.sheetRowArr[this.cols.Выполнения.КтоВыполнил] = task.avtor;
@@ -122,7 +115,7 @@ class MrClassPackagingHistory {
     this.sheet.getRange(task.row, this.cols.ВсеЗаказы.Статус).setValue(статусУпаковки);
     this.sheet.getRange(task.row, this.cols.Выполнения.КтоВыполнил).setValue(task.avtor);
     this.sheet.getRange(task.row, this.cols.Выполнения.ДатаВыполнения).setValue(new Date());
-
+    // Logger.log(`setСтатусУпаковки  статусУпаковки=${статусУпаковки} | task=${JSON.stringify(task)}`);
     // SpreadsheetApp.flush();
   }
 
@@ -171,9 +164,11 @@ class MrClassPackagingHistory {
   getRowЗаказа(НомерОтправления) {
     let vls = this.sheet.getRange(this.rows.bodyFirst, this.cols.ВсеЗаказы.НомерОтправления, this.rows.bodyLast - this.rows.bodyFirst + 1, 1).getValues();
     vls = vls.flat();
+    vls =vls.map(v=>`${v}`);
     let ind = vls.indexOf(`${НомерОтправления}`);
     let row = ind + this.rows.bodyFirst;
-    Logger.log(` НомерОтправления=${НомерОтправления} row=${row}`);
+    // Logger.log(`getRowЗаказа НомерОтправления=${НомерОтправления} row=${row} | vls=${JSON.stringify(vls)}`);
+    Logger.log(`getRowЗаказа НомерОтправления=${НомерОтправления} | row=${row}`);
     return row;
   }
 
@@ -219,9 +214,14 @@ class MrClassPackagingHistory {
     // let распечатан = task.sheetRowArr[this.cols.Заметки.Распечатан]; // распечатан
 
     if (!допустимыеСтатусы.includes(текСтатус)) {
-      task.addError(`Для Номера Отправления "${task.posting_number}" текуший статут "${текСтатус}", вы пытаетесь установить "${СтатусУпаковки.Распечатан}"`);
+      task.addError(`Для Номера Отправления "${task.posting_number}" текущий статус "${текСтатус}", вы пытаетесь установить "${СтатусУпаковки.Распечатан}"`);
       return;
     }
+
+    //if (!допустимыеСтатусы.includes(текСтатус)) {
+    //  task.addError(`Для Номера Отправления "${task.posting_number}" текущий статус "${текСтатус}", вы пытаетесь установить "${СтатусУпаковки.Распечатан}"`);
+    //  return;
+    //}
 
     // if (распечатан === true) {
     //   task.addError(`Для Номера Отправления "${task.posting_number}" ШК  уже был Распечатан!`);
@@ -237,10 +237,16 @@ class MrClassPackagingHistory {
     // let допустимыеСтатусы = [СтатусУпаковки.Пропущено, СтатусУпаковки.Новый]; //статусы при которых можно пометить как СтатусУпаковки.Выполнено
     let допустимыеСтатусы = [СтатусУпаковки.Пропущено, СтатусУпаковки.Новый]; //статусы при которых можно пометить как СтатусУпаковки.Выполнено
     let текСтатус = task.sheetRowArr[this.cols.ВсеЗаказы.Статус]; // текуший статус
+
     if (!допустимыеСтатусы.includes(текСтатус)) {
-      task.addError(`Для Номера Отправления "${task.posting_number}" текуший статут "${текСтатус}", вы пытаетесь установить "${СтатусУпаковки.Пропущено}"`);
+      task.addError(`ШК был распечатан!`);
       return;
     }
+
+    //if (!допустимыеСтатусы.includes(текСтатус)) {
+    //  task.addError(`Для Номера Отправления "${task.posting_number}" текущий статус "${текСтатус}", вы пытаетесь установить "${СтатусУпаковки.Пропущено}"`);
+    //  return;
+    //}
 
     // let распечатан = task.sheetRowArr[this.cols.Заметки.Распечатан]; // распечатан
 
@@ -269,9 +275,14 @@ class MrClassPackagingHistory {
 
 
     if (!допустимыеСтатусы.includes(текСтатус)) {
-      task.addError(`Для Номера Отправления "${task.posting_number}" текуший статут "${текСтатус}", вы пытаетесь установить "${СтатусУпаковки.Выполнено}"`);
+      task.addError(`ШК не был распечатан!`);
       return;
     }
+
+    //if (!допустимыеСтатусы.includes(текСтатус)) {
+    //  task.addError(`Для Номера Отправления "${task.posting_number}" текуший статут "${текСтатус}", вы пытаетесь установить "${СтатусУпаковки.Выполнено}"`);
+    //  return;
+    //}
 
     // // if (распечатан !== true) {
     // if (!распечатан) {
@@ -280,10 +291,15 @@ class MrClassPackagingHistory {
     //   return;
     // }
 
+    
+
+
     this.setЗаказВРаботе(task.avtor, undefined);
     if (текСтатус == СтатусУпаковки.Выполнено) {
       return;
     }
+
+    new MrClassTaskWB().command_done(task); 
     this.setСтатусУпаковки(task, СтатусУпаковки.Выполнено);
   }
 
@@ -314,17 +330,20 @@ class MrClassPackagingHistory {
       заказыВРаботе[avtor] = { "row": row, "date": new Date() };
     }
     this.sheet.getRange(this.rangeStr.ЗаказыВРаботе).setValue(JSON.stringify(заказыВРаботе));
+
+
+     Logger.log(`setЗаказВРаботе  заказыВРаботе=${JSON.stringify(заказыВРаботе)}`);
   }
 
   getRowForNextTask(task) {
     let nextRow = 0;
     // Logger.log(` getRowForNextTask `);
 
-    let всеВыполнено = this.sheet.getRange(this.rangeStr.ВсеВыполнено).getValue();
-    if (всеВыполнено == true) { return this.getRowЗаказа(DefНомерОтправления.ВСЕ_ВЫПОЛНЕННО); }
+    // let всеВыполнено = this.sheet.getRange(this.rangeStr.ВсеВыполнено).getValue();
+    // if (всеВыполнено == true) { return this.getRowЗаказа(DefНомерОтправления.ВСЕ_ВЫПОЛНЕННО); }
 
-    let rowТекущийЗаказ = this.sheet.getRange(this.rangeStr.ТекущийЗаказ).getValue();
-    if (rowТекущийЗаказ == this.rows.finish) { return this.getRowЗаказа(DefНомерОтправления.ВСЕ_ВЫПОЛНЕННО); }
+    // let rowТекущийЗаказ = this.sheet.getRange(this.rangeStr.ТекущийЗаказ).getValue();
+    // if (rowТекущийЗаказ == this.rows.finish) { return this.getRowЗаказа(DefНомерОтправления.ВСЕ_ВЫПОЛНЕННО); }
 
 
 
@@ -349,7 +368,7 @@ class MrClassPackagingHistory {
 
         if (следующиеЗаказы.length == 0) {
           следующиеЗаказы = [this.rows.finish];
-          //  нет болше заказов на упаковку
+          //  нет больше заказов на упаковку
         }
 
         // rowТекущийЗаказ = this.sheet.getRange(this.rangeStr.ТекущийЗаказ).getValue();
@@ -383,8 +402,14 @@ class MrClassPackagingHistory {
 
 
     if (nextRow == this.rows.finish) {
-      this.sheet.getRange(this.rangeStr.ВсеВыполнено).setValue(true);
+      let vls = this.getValues();
+      let fvls = vls.filter((v, i, arr) => { return v[this.cols.ВсеЗаказы.Статус] != СтатусУпаковки.Выполнено })
+      Logger.log(`fvls = ${fvls.length}`);
+      if (fvls.length == 0) {
+        this.sheet.getRange(this.rangeStr.ВсеВыполнено).setValue(true);
+      }
       nextRow = this.getRowЗаказа(DefНомерОтправления.ВСЕ_ВЫПОЛНЕННО);
+
     }
     return nextRow;
   }
@@ -498,9 +523,17 @@ class MrClassPackagingHistory {
 
 
 
-        let request = json_private.request;
-        urlPdf = this.fetchAllByRequestArr([request])[0];
+        let taskWB = new MrClassTaskWB();
+        if (taskWB.isOrderWB(task.sheetRowArr[this.cols.ВсеЗаказы.МеткаМагазина])) {
+  
+          urlPdf = taskWB.getPdfUrlForTask(task);
 
+        } else {
+
+          let request = json_private.request;
+          urlPdf = this.fetchAllByRequestArr([request])[0];
+
+        }
 
 
       }
@@ -649,11 +682,13 @@ class MrClassPackagingHistory {
 
     let vls = this.getValues();
 
-    let mrClassShops = new MrClassShops(vls, this);
-    let следующиеЗаказы = mrClassShops.getСледующиеЗаказы();
-    if (следующиеЗаказы.length == 0) {
-    }
-    this.sheet.getRange(this.rangeStr.СледующиеЗаказы).setValue(JSON.stringify(следующиеЗаказы));
+    // создает колизии повторяются заказы
+    // let mrClassShops = new MrClassShops(vls, this);
+    // let следующиеЗаказы = mrClassShops.getСледующиеЗаказы();
+    // if (следующиеЗаказы.length == 0) {
+    // }
+    // this.sheet.getRange(this.rangeStr.СледующиеЗаказы).setValue(JSON.stringify(следующиеЗаказы));
+
 
     if (!this.hasTime(duration, 60 * 1000)) { Logger.log(`Мало времени выход из triggerHelpИсторияУаковки return`); return; }
 
