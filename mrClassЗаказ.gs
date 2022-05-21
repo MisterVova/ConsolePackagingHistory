@@ -200,8 +200,6 @@ class DefЗаказ extends Заказ {
 
 }
 
-
-
 /**
  * @typedef {Object} JsonЗаказа
  * @property {string} НомерОтправления
@@ -218,35 +216,3 @@ class DefЗаказ extends Заказ {
  * @property {number} row
  * 
  */
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

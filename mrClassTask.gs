@@ -1,5 +1,3 @@
-// https://script.google.com/macros/s/AKfycbxcN1n8XzLm1TtLuTPiWgyTuGKJZeWxIZV6Q4eRcyO0IVKwajwMom5oJfGhsw8-lFmu/exec?ret_format=json&avtor=Консоль(тест)&posting_number=02338018-0207-5&task=print
-
 function test() {
   url = "https://script.google.com/macros/s/AKfycbxcN1n8XzLm1TtLuTPiWgyTuGKJZeWxIZV6Q4eRcyO0IVKwajwMom5oJfGhsw8-lFmu/exec?ret_format=json&avtor=Консоль(тест)&posting_number=02338018-0207-5&task=print";
   let cc = UrlFetchApp.fetch(url).getContentText();

@@ -1,3 +1,40 @@
+function Консоль_упаковки_триггер_для_очистки_консолей() {
+
+deleteTriggers3();  
+scheduledTrigger3(17,00);
+}
+
+function scheduledTrigger3(hours,minutes){
+  
+var today_D = new Date();
+var year = today_D.getFullYear();
+var month = today_D.getMonth();
+var day = today_D.getDate();
+  
+pars = [year,month,day,hours,minutes];
+  
+var scheduled_D = new Date(...pars);
+var hours_remain=Math.abs(scheduled_D - today_D) / 36e5;
+ScriptApp.newTrigger("Консоль_упаковки_обновление_для_очистки_консолей")
+.timeBased()
+.after(hours_remain * 60 *60 * 1000)
+.create()
+}
+
+function deleteTriggers3() {
+  
+var triggers = ScriptApp.getProjectTriggers();
+for (var i = 0; i < triggers.length; i++) {
+  if (   triggers[i].getHandlerFunction() == "Консоль_упаковки_обновление_для_очистки_консолей") {
+    ScriptApp.deleteTrigger(triggers[i]);
+  }
+}
+}
+
+function Консоль_упаковки_обновление_для_очистки_консолей() {
+ menuОчиститьКонсоли();
+}
+
 
 class MrClassConsole {
   constructor() {
@@ -27,9 +64,6 @@ class MrClassConsole {
     this.event.parameter[web.parameters.avtor] = `${this.avtor}`;
     this.event.parameter[web.parameters.posting_number] = `${this.postingNumber}`;
   }
-
-
-
 
   getSheetNameActiveSheetConsole(testName = undefined) {
     let ss = this.getSpreadsheetApp();
@@ -74,27 +108,44 @@ class MrClassConsole {
       Logger.log(`MrClassConsole executeCommands  не лист Консоли`);
       return;
     }
-    /** @type {JsonЗаказа} */
-    let jsonЗаказа = undefined;
-    Logger.log(`MrClassConsole executeCommands commands=${commandArr}`);
-    for (let i = 0; i < commandArr.length; i++) {
-      let command = commandArr[i];
-      Logger.log(`MrClassConsole executeCommands Следуящая command=${command}`);
-      switch (command) {
-        case commands.get: jsonЗаказа = this.get(); break;
-        case commands.showPdf: jsonЗаказа = this.showPdf(jsonЗаказа); break;
-        case commands.print: jsonЗаказа = this.print(); break;
-        case commands.next: jsonЗаказа = this.next(); break;
-        case commands.skip: jsonЗаказа = this.skip(); break;
-        case commands.done: jsonЗаказа = this.done(); break;
-        case commands.skip_and_next: jsonЗаказа = this.skip_and_next(); break;
-        case commands.done_and_next: jsonЗаказа = this.done_and_next(); break;
-      }
-      this.checkErrors(jsonЗаказа);
-      if (this.hasError) { break; }
-    }
 
-    this.updateSheet(jsonЗаказа);
+    let lock = LockService.getScriptLock();
+    try {
+      lock.waitLock(1000 * 60 * 29); // подождите 60 * 29 секунд, пока другие не воспользуются разделом кода, и заблокируйте его, чтобы остановить, а затем продолжите
+
+
+
+      /** @type {JsonЗаказа} */
+      let jsonЗаказа = undefined;
+      Logger.log(`MrClassConsole executeCommands commands=${commandArr}`);
+      for (let i = 0; i < commandArr.length; i++) {
+        let command = commandArr[i];
+        Logger.log(`MrClassConsole executeCommands Следуящая command=${command}`);
+        switch (command) {
+          case commands.get: jsonЗаказа = this.get(); break;
+          case commands.showPdf: jsonЗаказа = this.showPdf(jsonЗаказа); break;
+          case commands.print: jsonЗаказа = this.print(); break;
+          case commands.next: jsonЗаказа = this.next(); break;
+          case commands.skip: jsonЗаказа = this.skip(); break;
+          case commands.done: jsonЗаказа = this.done(); break;
+          case commands.skip_and_next: jsonЗаказа = this.skip_and_next(); break;
+          case commands.done_and_next: jsonЗаказа = this.done_and_next(); break;
+        }
+        this.checkErrors(jsonЗаказа);
+        if (this.hasError) { break; }
+      }
+
+      this.updateSheet(jsonЗаказа);
+
+
+    } catch (err) {
+      mrErrToString(err);
+      let str = "Наверное очередь занята";
+      Logger.log(str);
+      task.addError(str);
+    } finally {
+      lock.releaseLock();
+    }
   }
 
 
@@ -157,6 +208,10 @@ class MrClassConsole {
 
   /** @returns {JsonЗаказа} */
   next() {
+
+    let curentPostingNumber = this.getCurentPostingNumber();
+    if (DefНомерОтправления.НЕ_ВЫБРАН_ЗАКАЗ != curentPostingNumber) { return; }
+
     this.event.parameter[web.parameters.task] = `${web.value.task.next}`;
     let ret = executeEvent(this.event);
     return ret;
@@ -203,16 +258,22 @@ class MrClassConsole {
 
   /** @param {string[]} errors */
   showErrors(errors) {
-    let str = `Есть Ошибки:\n${errors.map((v, i, arr) => { return `  ${i + 1}: ${v}` }).join('\n')}`;
-    Logger.log(str);
-    SpreadsheetApp.getUi().alert(str);
+
+    // let str = `Есть Ошибки:\n${errors.map((v, i, arr) => { return `  ${i + 1}: ${v}` }).join('\n')}`;
+    let str = ` <h1>ВНИМАНИЕ!</h1>
+      <h2>
+        ${errors.map((v, i, arr) => { return `<li> ${v}  </li>` }).join('\n')}
+      </h2>
+    `;
+
+    // Logger.log(str);
+
+    var attention = HtmlService.createHtmlOutput('' + str + '<script>setTimeout(function () { google.script.host.close() }, 10000);</script>');
+    SpreadsheetApp.getUi().showModalDialog(attention, " ");
+
+
   }
-
-
 }
-
-
-
 
 let commands = {
   print: "print", // пометить заказ как Пропущенный
@@ -259,5 +320,4 @@ function menuОчиститьКонсоли() {
     sheet.getRange(rangesStr.postingNumber).setValue(DefНомерОтправления.НЕ_ВЫБРАН_ЗАКАЗ);
   }
 }
-
 

@@ -230,13 +230,6 @@ function nr(A1) {
 }
 
 
-
-
-
-
-
-
-
 function nc(column) {
   column = parseInt("" + column);
   if (isNaN(column)) { throw ('файл mrColumnToNr функция nrCol(): не найдено буквенное обозначение для колонки "' + column + '"'); }
@@ -291,103 +284,13 @@ function responseToJSON(response) {
 }
 
 function print_pdf_by_url(url_pdf) {
-  Logger.log(`print_pdf_by_url ${url_pdf}`);
-  // Блок отображения скачанного PDF
 
-  var html = HtmlService.createHtmlOutput('<html><script>'
-    + 'window.close = function(){window.setTimeout(function(){google.script.host.close()},9)};'
-    + 'var a = document.createElement("a"); a.href="' + url_pdf + '"; a.target="_blank";'
-    + 'if(document.createEvent){'
-    + '  var event=document.createEvent("MouseEvents");'
-    + '  if(navigator.userAgent.toLowerCase().indexOf("firefox")>-1){window.document.body.append(a)}'
-    + '  event.initEvent("click",true,true); a.dispatchEvent(event);'
-    + '}else{ a.click() }'
-    + 'close();'
-    + '</script>'
-    // В случае сбоя приведенного выше кода, предложение альтернативы ниже.
-    + '<body style="word-break:break-word;font-family:sans-serif;">Не удалось открыть автоматически. <a href="' + url_pdf + '" target="_blank" onclick="window.close()">Нажмите здесь, чтобы продолжить</a>.</body>'
-    + '<script>google.script.host.setHeight(100);google.script.host.setWidth(410)</script>'
-    + '</html>')
-    .setWidth(400).setHeight(10);
-  SpreadsheetApp.getUi().showModalDialog(html, "Открываем....");
+var selection = url_pdf;
 
+var html = "<script>window.open('" + selection + "');google.script.host.close();</script>";
+
+var userInterface = HtmlService.createHtmlOutput(html);
+
+SpreadsheetApp.getUi().showModalDialog(userInterface, 'Открываем');
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * https://developers.google.com/apps-script/guides/web
- * When a user visits an app or a program sends the app an HTTP GET request, Apps Script runs the function doGet(e).
- * When a program sends the app an HTTP POST request, Apps Script runs doPost(e) instead.
- * In both cases, the e argument represents an event parameter that can contain information about any request parameters.
- * The structure of the event object is shown in the table below:
- * @typedef {Object} Event
- * @property {string} queryString	- The value of the query string portion of the URL, or null if no query string is specified  // name=alice&n=1&n=2
- * @property {string} parameter	- An object of key/value pairs that correspond to the request parameters. Only the first value is returned for parameters that have multiple values.//  {"name": "alice", "n": "1"}
- * @property {Object} parameters	- An object similar to e.parameter, but with an array of values for each key// {"name": ["alice"], "n": ["1", "2"]}
- * @property {string} contextPath	Not used, always the empty string.
- * @property {namber} contentLength	- The length of the request body for POST requests, or -1 for GET requests // 332
- *
- * @property {Object} postData	- postData
- * @property {namber} postData.length	- The same as e.contentLength // 332
- * @property {string} postData.type	- The MIME type of the POST body // text/csv
- * @property {string} postData.contents	- The content text of the POST body  //  Alice,21
- * @property {string} postData.name	-Always the value "postData"  //  postData
-
- */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

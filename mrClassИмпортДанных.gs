@@ -1,4 +1,39 @@
+function Консоль_упаковки_триггер_для_импорта_заказов() {
 
+deleteTriggers2();  
+scheduledTrigger2(17,01);
+}
+
+function scheduledTrigger2(hours,minutes){
+  
+var today_D = new Date();
+var year = today_D.getFullYear();
+var month = today_D.getMonth();
+var day = today_D.getDate();
+  
+pars = [year,month,day,hours,minutes];
+  
+var scheduled_D = new Date(...pars);
+var hours_remain=Math.abs(scheduled_D - today_D) / 36e5;
+ScriptApp.newTrigger("Консоль_упаковки_обновление_для_импорта_заказов")
+.timeBased()
+.after(hours_remain * 60 *60 * 1000)
+.create()
+}
+
+function deleteTriggers2() {
+  
+var triggers = ScriptApp.getProjectTriggers();
+for (var i = 0; i < triggers.length; i++) {
+  if (   triggers[i].getHandlerFunction() == "Консоль_упаковки_обновление_для_импорта_заказов") {
+    ScriptApp.deleteTrigger(triggers[i]);
+  }
+}
+}
+
+function Консоль_упаковки_обновление_для_импорта_заказов() {
+ menuИмпортДанных();
+}
 
 
 class MrClassImportData {
@@ -38,9 +73,9 @@ class MrClassImportData {
       let arrМеткиМагазинов = getContext().arrПриоритетМагазина;
       vls = vls.filter((v, i, arr) => { return arrМеткиМагазинов.includes(fl_str(v[this.cols.ВсеЗаказы.МеткаМагазина])) });
 
-
-      let arrСтатусыМПкОтправке = getContext().arrСтатусыМПкОтправке;
-      vls = vls.filter((v, i, arr) => { return arrСтатусыМПкОтправке.includes(v[this.cols.ВсеЗаказы.СтатусМП]) });
+      // фильтрация по статусам // статусов не в изходных данных
+      // let arrСтатусыМПкОтправке = getContext().arrСтатусыМПкОтправке;
+      // vls = vls.filter((v, i, arr) => { return arrСтатусыМПкОтправке.includes(v[this.cols.ВсеЗаказы.СтатусМП]) });
 
 
       // блок коректировки  и добовления карточки 
@@ -258,22 +293,23 @@ class MrClassImportData {
     this.cols = {
       ВсеЗаказы: {
         first: nr("A"),
-        last: nr("G"),
+        last: nr("E"),
         МеткаМагазина: nr("A") + i++,
         АртикулМП: nr("A") + i++,
         НомерОтправления: nr("A") + i++,
-        Наименование: nr("A") + i++,
-        СтатусМП: nr("A") + i++,
+        // Наименование: nr("A") + i++,
+        // СтатусМП: nr("A") + i++,
         Кол_во: nr("A") + i++,
         ДатаОтгрузки: nr("A") + i++,
       },
 
       ВсеКарточки: {
-        first: nr("H"),
-        last: nr("J"),
-        АртикулМП: nr("H") + j++,
-        АртикулТовара: nr("H") + j++,
-        Фото: nr("H") + j++,
+        first: nr("F"),
+        last: nr("I"),
+        АртикулМП: nr("F") + j++,
+        АртикулТовара: nr("F") + j++,
+        Наименование: nr("F") + j++,
+        Фото: nr("F") + j++,
       },
     }
 
@@ -297,15 +333,7 @@ class MrClassImportData {
     }
   }
 
-
-
-
 }
-
-
-
-
-
 function triggerИмпортДанных(info = undefined, duration = 1 / 24 / 60 * 5) {
   let classImportData = new MrClassImportData();
   classImportData.triggerИмпортДанных(info, duration);
@@ -315,10 +343,3 @@ function triggerИмпортДанных(info = undefined, duration = 1 / 24 / 6
 function menuИмпортДанных() {
   triggerИмпортДанных(`Вызов Триггера из меню ${new Date()}`);
 }
-
-
-
-
-
-
-

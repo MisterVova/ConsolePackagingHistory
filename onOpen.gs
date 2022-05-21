@@ -1,4 +1,3 @@
-
 function onOpen() {
 
   var ui = SpreadsheetApp.getUi();
@@ -18,8 +17,3 @@ function onOpen() {
   menu.addToUi();
   Logger.log(`onOpen.onOpen() menu заданно `);
 }
-
-
-
-
-

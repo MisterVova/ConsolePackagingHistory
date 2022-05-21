@@ -3,5 +3,33 @@
   "dependencies": {
   },
   "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "V8"
+  "runtimeVersion": "V8",
+  "sheets": {
+    "macros": [{
+      "menuName": "menu_skip",
+      "functionName": "menu_skip",
+      "defaultShortcut": "Ctrl+Alt+Shift+3"
+    }, {
+      "menuName": "menu_print",
+      "functionName": "menu_print",
+      "defaultShortcut": "Ctrl+Alt+Shift+1"
+    }, {
+      "menuName": "menu_next",
+      "functionName": "menu_next",
+      "defaultShortcut": "Ctrl+Alt+Shift+8"
+    }, {
+      "menuName": "menu_done",
+      "functionName": "menu_done",
+      "defaultShortcut": "Ctrl+Alt+Shift+2"
+    }, {
+      "menuName": "print_pdf",
+      "functionName": "print_pdf"
+    }, {
+      "menuName": "Консоль_упаковки_обновление_для_очистки_консолей",
+      "functionName": "Консоль_упаковки_обновление_для_очистки_консолей"
+    }, {
+      "menuName": "Консоль_упаковки_обновление_для_импорта_заказов",
+      "functionName": "Консоль_упаковки_обновление_для_импорта_заказов"
+    }]
+  }
 }
